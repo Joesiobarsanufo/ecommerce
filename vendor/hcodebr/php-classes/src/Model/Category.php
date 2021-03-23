@@ -100,6 +100,27 @@ return $sql->select("SELECT * FROM tb_products WHERE idproduct not in(
 
 		}
 	}
+	public function getProductsPage($page=1,$itemsPerPage=8){
+		$start = ($page -1)* $itemsPerPage;
+		$sql = new Sql();
+		$results = $sql->select("
+		SELECT sql_calc_found_rows *
+		FROM tb_products a
+		INNER JOIN tb_productscategories b ON a.idproduct = b.idproduct
+		INNER JOIN tb_categories c On c.idcategory=b.idcategory
+		WHERE c.idcategory = :idcategory
+		LIMIT $start,$itemsPerPage;
+", [
+			':idcategory'=>$this->getidcategory()
+		]);
+$resultTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal;");
+return [
+	'data'=>Product::checkList($results),
+	'total'=>(int)$resultTotal[0]["nrtotal"],
+	'pages'=>ceil($resultTotal[0]["nrtotal"] / $itemsPerPage)
+];
+
+	}
 	public function addProduct(Product $product){
 		$sql = new Sql();
 		$sql->query("INSERT INTO tb_productscategories (idcategory, idproduct) VALUES (:idcategory, :idproduct)",[
