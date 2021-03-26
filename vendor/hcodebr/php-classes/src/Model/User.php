@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace Hcode\Model;
 
@@ -499,4 +499,5 @@ class User extends Model {
 	} 
 
 }
-?>
+
+ ?>
